@@ -28,7 +28,7 @@ const DeveloperCard = ({ user, totalCount, currentIndex }) => {
 
       setTimeout(async () => {
         try {
-          await api.post("/request/send/${status}/${_id}",
+          await api.post(`/request/send/${status}/${_id}`,
             {});
           dispatch(removeFeed(_id));
         } catch (e) {
@@ -53,7 +53,7 @@ const DeveloperCard = ({ user, totalCount, currentIndex }) => {
     setTimeout(async () => {
       try {
         // 1. Save the super like
-        await api.post("/superlike/${_id}",
+        await api.post(`/superlike/${_id}`,
           {});
       } catch (e) {
         console.error("Super like save:", e?.response?.data?.error || e);
@@ -61,7 +61,7 @@ const DeveloperCard = ({ user, totalCount, currentIndex }) => {
 
       try {
         // 2. Also send interested connection request
-        await api.post("/request/send/interested/${_id}",
+        await api.post(`/request/send/interested/${_id}`,
           {});
       } catch (e) {
         // It's OK if connection request already exists

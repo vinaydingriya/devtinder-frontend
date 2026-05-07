@@ -12,7 +12,7 @@ const SharedResourcesPanel = ({ roomId, onClose }) => {
   const fetchResources = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/chat/room/${roomId}/resources");
+      const res = await api.get(`/chat/room/${roomId}/resources`);
       setResources(res.data.data || []);
     } catch (e) {
       console.error("Failed to fetch resources:", e);

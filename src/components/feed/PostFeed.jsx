@@ -112,7 +112,7 @@ const PostFeed = ({ userId }) => {
       if (!userId) return;
       try {
         setLoading(true);
-        const res = await api.get("/posts/user/${userId}?page=${pageNum}&limit=10");
+        const res = await api.get(`/posts/user/${userId}?page=${pageNum}&limit=10`);
         if (pageNum === 1) {
           setPosts(res.data.data);
         } else {
@@ -138,7 +138,7 @@ const PostFeed = ({ userId }) => {
 
   const handleLike = async (postId) => {
     try {
-      const res = await api.patch("/posts/${postId}/like",
+      const res = await api.patch(`/posts/${postId}/like`,
         {});
       setPosts((prev) =>
         prev.map((p) => {
@@ -156,7 +156,7 @@ const PostFeed = ({ userId }) => {
 
   const handleDelete = async (postId) => {
     try {
-      await api.delete("/posts/${postId}");
+      await api.delete(`/posts/${postId}`);
       setPosts((prev) => prev.filter((p) => p._id !== postId));
     } catch (e) {
       console.error("Failed to delete post:", e);

@@ -19,7 +19,7 @@ const RepoCard = ({ reference }) => {
   const fetchMetadata = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/chat/github/repo/${reference.owner}/${reference.repoName}");
+      const res = await api.get(`/chat/github/repo/${reference.owner}/${reference.repoName}`);
       setMetadata(res.data.data);
     } catch (e) {
       console.error("Failed to fetch repo metadata:", e);

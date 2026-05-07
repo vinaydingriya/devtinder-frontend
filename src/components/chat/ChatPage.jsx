@@ -43,7 +43,7 @@ const ChatPage = () => {
 
     async function openChatWithUser() {
       try {
-        const res = await api.get("/chat/room/${targetUserId}");
+        const res = await api.get(`/chat/room/${targetUserId}`);
         const room = res.data.data;
 
         // Add to rooms if not already there

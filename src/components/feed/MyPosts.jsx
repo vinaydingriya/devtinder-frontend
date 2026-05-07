@@ -109,7 +109,7 @@ const MyPosts = ({ userId }) => {
       if (!userId) return;
       try {
         setLoading(true);
-        const res = await api.get("/posts/me?page=${pageNum}&limit=10");
+        const res = await api.get(`/posts/me?page=${pageNum}&limit=10`);
         if (pageNum === 1) {
           setPosts(res.data.data);
         } else {
@@ -132,7 +132,7 @@ const MyPosts = ({ userId }) => {
 
   const handleDelete = async (postId) => {
     try {
-      await api.delete("/posts/${postId}");
+      await api.delete(`/posts/${postId}`);
       setPosts((prev) => prev.filter((p) => p._id !== postId));
     } catch (e) {
       console.error("Failed to delete post:", e);

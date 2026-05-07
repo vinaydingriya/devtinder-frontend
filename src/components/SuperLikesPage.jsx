@@ -61,7 +61,7 @@ const SuperLikesPage = () => {
   const handleConnect = async (userId) => {
     setConnectingId(userId);
     try {
-      await api.post("/superlike/${userId}/connect",
+      await api.post(`/superlike/${userId}/connect`,
         {});
       // Update profile's status locally
       setProfiles((prev) =>
@@ -80,7 +80,7 @@ const SuperLikesPage = () => {
   const handleRemove = async (userId) => {
     setRemovingId(userId);
     try {
-      await api.delete("/superlike/${userId}");
+      await api.delete(`/superlike/${userId}`);
       setProfiles((prev) => prev.filter((p) => p._id !== userId));
     } catch (e) {
       console.error("Failed to remove:", e);

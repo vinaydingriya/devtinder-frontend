@@ -44,7 +44,7 @@ const ChatWindow = ({ roomId, currentUserId, onBack }) => {
     async (pageNum = 1) => {
       try {
         setLoadingMessages(true);
-        const res = await api.get("/chat/messages/${roomId}?page=${pageNum}&limit=50");
+        const res = await api.get(`/chat/messages/${roomId}?page=${pageNum}&limit=50`);
 
         if (pageNum === 1) {
           dispatch(setMessages({ chatRoomId: roomId, messages: res.data.data }));

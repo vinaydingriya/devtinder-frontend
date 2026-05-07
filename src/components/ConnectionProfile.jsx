@@ -30,7 +30,7 @@ const ConnectionProfile = () => {
     async function fetchProfile() {
       try {
         setLoading(true);
-        const res = await api.get("/user/profile/${userId}");
+        const res = await api.get(`/user/profile/${userId}`);
         setUser(res.data.data);
       } catch (e) {
         setError(e?.response?.data?.error || "Failed to load profile");
