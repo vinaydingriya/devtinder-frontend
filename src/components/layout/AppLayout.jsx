@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import { BASE_URL } from "../../utils/constants";
+import api from "../../utils/api";
 import { addUser } from "../../utils/userSlice";
 import Sidebar from "./Sidebar";
 
@@ -22,10 +21,7 @@ const AppLayout = () => {
       if (user.data) return;
 
       try {
-        const res = await axios.get(`${BASE_URL}/profile/view`, {
-          withCredentials: true,
-          signal,
-        });
+        const res = await api.get("/profile/view", { signal });
         dispatch(addUser(res.data.data));
       } catch (e) {
         // Cancelled requests (e.g. React StrictMode cleanup) must not

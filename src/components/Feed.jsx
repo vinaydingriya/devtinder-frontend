@@ -1,5 +1,4 @@
-import axios from "axios";
-import { BASE_URL } from "../utils/constants";
+import api from "../utils/api";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../utils/feedSlice";
@@ -35,17 +34,15 @@ const Feed = () => {
 
         if (filters.appliedFilters.length > 0) {
           const skillsQuery = filters.appliedFilters.join(",");
-          res = await axios.get(
-            BASE_URL +
-              `/api/recommendations/filtered-by-skills?skills=${encodeURIComponent(
-                skillsQuery
-              )}&limit=50`,
-            { withCredentials: true, signal }
+          res = await api.get(
+            `/api/recommendations/filtered-by-skills?skills=${encodeURIComponent(
+              skillsQuery
+            )}&limit=50`,
+            { signal }
           );
           setIsFiltered(true);
         } else {
-          res = await axios.get(BASE_URL + "/api/feed", {
-            withCredentials: true,
+          res = await api.get("/api/feed", {
             signal,
           });
           setIsFiltered(false);

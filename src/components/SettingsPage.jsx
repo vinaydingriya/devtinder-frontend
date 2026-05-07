@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { BASE_URL } from "../utils/constants";
+import api from "../utils/api";
 import { removeUser } from "../utils/userSlice";
 import { removeAllFeed } from "../utils/feedSlice";
 import { removeAllRequests } from "../utils/requestsSlice";
@@ -55,9 +54,9 @@ const SettingsPage = () => {
     async function fetchStats() {
       try {
         const [postsRes, superLikesRes, connectionsRes] = await Promise.all([
-          axios.get(`${BASE_URL}/posts/me?limit=1`, { withCredentials: true }),
-          axios.get(`${BASE_URL}/superlikes/count`, { withCredentials: true }),
-          axios.get(`${BASE_URL}/user/connections`, { withCredentials: true }),
+          api.get("/posts/me?limit=1"),
+          api.get("/superlikes/count"),
+          api.get("/user/connections"),
         ]);
         setStats({
           posts: postsRes.data.pagination?.total || 0,
@@ -84,11 +83,8 @@ const SettingsPage = () => {
     setPwdError("");
     setPwdLoading(true);
     try {
-      await axios.patch(
-        BASE_URL + "/profile/password",
-        { oldPassword, newPassword },
-        { withCredentials: true }
-      );
+      await api.patch("/profile/password",
+        { oldPassword, newPassword });
       setPwdSuccess(true);
       setOldPassword("");
       setNewPassword("");
@@ -103,7 +99,8 @@ const SettingsPage = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
+      await api.post("/logout", {});
+      localStorage.removeItem("token");
       dispatch(removeUser());
       dispatch(removeAllConnections());
       dispatch(removeAllFeed());
@@ -112,6 +109,8 @@ const SettingsPage = () => {
       navigate("/login");
     } catch (e) {
       console.log(e);
+      localStorage.removeItem("token");
+      navigate("/login");
     }
   };
 

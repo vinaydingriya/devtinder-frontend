@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import UserCard from "./UserCard";
-import axios from "axios";
-import { BASE_URL } from "../utils/constants";
+import api from "../utils/api";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 
@@ -61,11 +60,8 @@ const EditProfile = ({ user }) => {
       data['gender'] = gender;
     }
     try {
-      const res = await axios.patch(
-        BASE_URL + "/profile/edit",
-        data,
-        { withCredentials: true }
-      );
+      const res = await api.patch("/profile/edit",
+        data);
       dispatch(addUser(res.data.data));
       setShowToast(true);
       setTimeout(() => {

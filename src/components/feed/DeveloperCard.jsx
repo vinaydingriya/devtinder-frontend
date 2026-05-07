@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { BASE_URL } from "../../utils/constants";
+import api from "../../utils/api";
 import { useDispatch } from "react-redux";
 import { removeFeed } from "../../utils/feedSlice";
 import { Star, X, Heart } from "lucide-react";
@@ -29,11 +28,8 @@ const DeveloperCard = ({ user, totalCount, currentIndex }) => {
 
       setTimeout(async () => {
         try {
-          await axios.post(
-            `${BASE_URL}/request/send/${status}/${_id}`,
-            {},
-            { withCredentials: true }
-          );
+          await api.post("/request/send/${status}/${_id}",
+            {});
           dispatch(removeFeed(_id));
         } catch (e) {
           if (e?.response?.data?.error === "Connection request already exists") {
@@ -57,22 +53,16 @@ const DeveloperCard = ({ user, totalCount, currentIndex }) => {
     setTimeout(async () => {
       try {
         // 1. Save the super like
-        await axios.post(
-          `${BASE_URL}/superlike/${_id}`,
-          {},
-          { withCredentials: true }
-        );
+        await api.post("/superlike/${_id}",
+          {});
       } catch (e) {
         console.error("Super like save:", e?.response?.data?.error || e);
       }
 
       try {
         // 2. Also send interested connection request
-        await axios.post(
-          `${BASE_URL}/request/send/interested/${_id}`,
-          {},
-          { withCredentials: true }
-        );
+        await api.post("/request/send/interested/${_id}",
+          {});
       } catch (e) {
         // It's OK if connection request already exists
         console.error("Connect:", e?.response?.data?.error || e);
