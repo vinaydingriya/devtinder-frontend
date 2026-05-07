@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { io } from "socket.io-client";
-import { SOCKET_URL } from "./constants";
+import { BASE_URL } from "./constants";
 import {
   addMessage,
   setOnlineUsers,
@@ -46,7 +46,7 @@ export const SocketProvider = ({ children }) => {
     const currentUserId = user.data._id;
 
     // Connect Socket.IO  
-    const socket = io(SOCKET_URL, {
+    const socket = io(BASE_URL, {
       withCredentials: true,
       transports: ["websocket", "polling"],
       reconnection: true,

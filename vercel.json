@@ -1,18 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://devtinder-api-8m6i.onrender.com/api/:path*" },
-    { "source": "/login", "destination": "https://devtinder-api-8m6i.onrender.com/login" },
-    { "source": "/signup", "destination": "https://devtinder-api-8m6i.onrender.com/signup" },
-    { "source": "/logout", "destination": "https://devtinder-api-8m6i.onrender.com/logout" },
-    { "source": "/profile/:path*", "destination": "https://devtinder-api-8m6i.onrender.com/profile/:path*" },
-    { "source": "/request/:path*", "destination": "https://devtinder-api-8m6i.onrender.com/request/:path*" },
-    { "source": "/user/:path*", "destination": "https://devtinder-api-8m6i.onrender.com/user/:path*" },
-    { "source": "/chat/:path*", "destination": "https://devtinder-api-8m6i.onrender.com/chat/:path*" },
-    { "source": "/posts/:path*", "destination": "https://devtinder-api-8m6i.onrender.com/posts/:path*" },
-    { "source": "/superlike/:path*", "destination": "https://devtinder-api-8m6i.onrender.com/superlike/:path*" },
-    { "source": "/superlikes/:path*", "destination": "https://devtinder-api-8m6i.onrender.com/superlikes/:path*" },
-    { "source": "/verify/:path*", "destination": "https://devtinder-api-8m6i.onrender.com/verify/:path*" },
-    { "source": "/socket.io/:path*", "destination": "https://devtinder-api-8m6i.onrender.com/socket.io/:path*" },
-    { "source": "/((?!assets/).*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
