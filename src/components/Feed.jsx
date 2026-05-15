@@ -26,6 +26,9 @@ const Feed = () => {
     const signal = controller.signal;
 
     async function handleFeed() {
+      // Skip fetch if feed is already loaded and no filters changed
+      if (feed.length > 0 && filters.appliedFilters.length === 0 && !isFiltered) return;
+
       setLoading(true);
       setError(null);
 
@@ -42,7 +45,7 @@ const Feed = () => {
           );
           setIsFiltered(true);
         } else {
-          res = await api.get("/api/feed", {
+          res = await api.get("/feed", {
             signal,
           });
           setIsFiltered(false);

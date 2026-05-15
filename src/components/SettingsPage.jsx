@@ -47,6 +47,12 @@ const SettingsPage = () => {
   const [pwdSuccess, setPwdSuccess] = useState(false);
   const [pwdLoading, setPwdLoading] = useState(false);
 
+  // Delete account state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   // Stats
   const [stats, setStats] = useState({ posts: 0, connections: 0, superLikes: 0 });
 
@@ -111,6 +117,29 @@ const SettingsPage = () => {
       console.log(e);
       localStorage.removeItem("token");
       navigate("/login");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) {
+      setDeleteError("Please enter your password.");
+      return;
+    }
+    setDeleteError("");
+    setDeleteLoading(true);
+    try {
+      await api.delete("/profile/delete", { data: { password: deletePassword } });
+      localStorage.removeItem("token");
+      dispatch(removeUser());
+      dispatch(removeAllConnections());
+      dispatch(removeAllFeed());
+      dispatch(removeAllRequests());
+      dispatch(resetChat());
+      navigate("/login");
+    } catch (e) {
+      setDeleteError(e?.response?.data?.error || "Failed to delete account.");
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -420,6 +449,70 @@ const SettingsPage = () => {
                   <p className="text-[10px] text-slate-500">Sign out of your account</p>
                 </div>
               </button>
+
+              {/* Divider */}
+              <div className="my-3 h-px bg-white/5" />
+
+              {/* Delete Account */}
+              {!showDeleteConfirm ? (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-500/[0.06] transition-all group text-left"
+                >
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-red-500/10 border border-red-500/10 text-red-400">
+                    <Trash2 className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-red-400">Delete Account</p>
+                    <p className="text-[10px] text-slate-500">Permanently delete your account and all data</p>
+                  </div>
+                </button>
+              ) : (
+                <div className="p-4 rounded-xl bg-red-500/[0.05] border border-red-500/15 space-y-3 animate-fade-in-up">
+                  <div className="flex items-start gap-2">
+                    <Trash2 className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-red-400">Are you sure?</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        This will permanently delete your profile, connections, chats, posts, and all data. This action cannot be undone.
+                      </p>
+                    </div>
+                  </div>
+
+                  <input
+                    type="password"
+                    placeholder="Enter your password to confirm"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    className={inputClass}
+                    onKeyDown={(e) => e.key === "Enter" && handleDeleteAccount()}
+                  />
+
+                  {deleteError && (
+                    <p className="text-red-400 text-xs">{deleteError}</p>
+                  )}
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setDeletePassword("");
+                        setDeleteError("");
+                      }}
+                      className="flex-1 px-4 py-2 rounded-xl text-sm font-medium bg-white/5 text-slate-400 hover:bg-white/10 border border-white/5 transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleDeleteAccount}
+                      disabled={deleteLoading}
+                      className="flex-1 px-4 py-2 rounded-xl btn-danger-gradient text-sm font-medium disabled:opacity-50"
+                    >
+                      {deleteLoading ? "Deleting..." : "Delete Forever"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
