@@ -30,7 +30,7 @@ const UserCard = ({ userData, showButton = true }) => {
   }
 
   return (
-    <div className="glass-card rounded-2xl w-80 overflow-hidden gradient-border hover:scale-[1.02] transition-all duration-300">
+    <div className="glass-card rounded-2xl w-full max-w-xs sm:w-80 overflow-hidden gradient-border hover:scale-[1.02] transition-all duration-300">
       {/* Photo */}
       <div className="relative overflow-hidden">
         <img

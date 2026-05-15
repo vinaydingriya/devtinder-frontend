@@ -95,7 +95,7 @@ const EditProfile = ({ user }) => {
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row justify-center items-start gap-8 py-8 px-4 w-full max-w-4xl mx-auto animate-fade-in-up lg:pr-96">
+      <div className="flex flex-col lg:flex-row justify-center items-start gap-8 py-6 sm:py-8 px-3 sm:px-4 w-full max-w-4xl mx-auto animate-fade-in-up">
         {/* Edit Form */}
         <div className="glass-card rounded-2xl p-8 w-full max-w-md gradient-border max-h-screen overflow-y-auto">
           <form onSubmit={(e) => saveProfile(e)} className="space-y-4">

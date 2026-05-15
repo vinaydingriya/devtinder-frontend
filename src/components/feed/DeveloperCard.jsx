@@ -96,14 +96,14 @@ const DeveloperCard = ({ user, totalCount, currentIndex }) => {
   const matchPercent = score ? (score * 100).toFixed(0) : null;
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-4">
+    <div className="flex flex-col items-center justify-center h-full px-3 sm:px-4">
       {/* Card */}
       <div
-        className={`relative w-[380px] rounded-3xl overflow-hidden glass-card gradient-border ${getAnimClass()}`}
-        style={{ maxHeight: "calc(100vh - 120px)" }}
+        className={`relative w-full max-w-[380px] rounded-3xl overflow-hidden glass-card gradient-border ${getAnimClass()}`}
+        style={{ maxHeight: "calc(100vh - 140px)" }}
       >
         {/* Photo */}
-        <div className="relative h-[380px] overflow-hidden">
+        <div className="relative h-[280px] sm:h-[340px] md:h-[380px] overflow-hidden">
           <img
             src={photoUrl}
             alt={`${firstName}'s photo`}
@@ -197,8 +197,8 @@ const DeveloperCard = ({ user, totalCount, currentIndex }) => {
         </div>
       </div>
 
-      {/* Keyboard hint */}
-      <p className="mt-2 text-[10px] text-slate-600">
+      {/* Keyboard hint — hidden on touch devices */}
+      <p className="mt-2 text-[10px] text-slate-600 hidden md:block">
         Use <kbd className="px-1.5 py-0.5 rounded bg-white/5 text-slate-500 font-mono text-[10px]">←</kbd> Pass · <kbd className="px-1.5 py-0.5 rounded bg-white/5 text-slate-500 font-mono text-[10px]">→</kbd> Connect
       </p>
     </div>

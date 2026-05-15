@@ -78,7 +78,7 @@ const Requests = () => {
                   {firstName + (lastName ? " " + lastName : "")}
                 </h3>
               </div>
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex gap-2 flex-shrink-0 flex-col sm:flex-row">
                 <button
                   className="px-4 py-2 rounded-xl btn-success-gradient text-sm font-medium"
                   onClick={() => reviewRequest(r._id, "accepted")}
