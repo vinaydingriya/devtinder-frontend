@@ -14,6 +14,7 @@ import {
   incrementUnread,
   decrementUnread,
 } from "./chatSlice";
+import { addNotification } from "./notificationSlice";
 
 const SocketContext = createContext(null);
 
@@ -165,6 +166,11 @@ export const SocketProvider = ({ children }) => {
 
     socket.on("messages_read", ({ chatRoomId, readAt }) => {
       dispatch(markRoomMessagesRead({ chatRoomId, readAt }));
+    });
+
+    // Real-time notifications (connection requests, accepts, etc.)
+    socket.on("notification", (data) => {
+      dispatch(addNotification(data));
     });
 
     socket.on("error", (error) => {

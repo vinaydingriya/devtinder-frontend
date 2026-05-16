@@ -44,7 +44,22 @@ const Login = () => {
 
       if (res.status === 200) {
         setError("");
-        setMessage("User added successfully!!");
+        // Auto-login after successful signup
+        try {
+          const loginRes = await api.post("/login", { email, password });
+          if (loginRes.data.token) {
+            localStorage.setItem("token", loginRes.data.token);
+          }
+          dispatch(addUser(loginRes.data.data));
+          navigate("/");
+        } catch (loginErr) {
+          // If auto-login fails, show success and switch to login form
+          setMessage("Account created! Redirecting to login...");
+          setTimeout(() => {
+            setIsLogin(true);
+            setMessage("");
+          }, 1500);
+        }
       }
     } catch (e) {
       console.log(e);

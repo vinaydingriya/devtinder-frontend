@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import UserCard from "./UserCard";
 import api from "../utils/api";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { Camera, Upload, X } from "lucide-react";
 
 const INTERESTS_OPTIONS = [
   "AI",
@@ -39,6 +40,54 @@ const EditProfile = ({ user }) => {
 
   const dispatch = useDispatch();
   const [showToast, setShowToast] = useState(false);
+
+  // Photo upload state
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handlePhotoUpload = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file (JPG, PNG, WebP)");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be under 5MB");
+      return;
+    }
+
+    // Show preview immediately
+    const preview = URL.createObjectURL(file);
+    setPhotoPreview(preview);
+    setPhotoUploading(true);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("photo", file);
+      const res = await api.post("/profile/photo", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setPhotoUrl(res.data.photoUrl);
+      dispatch(addUser(res.data.data));
+      setPhotoPreview(null);
+    } catch (e) {
+      setError(e?.response?.data?.error || "Photo upload failed");
+      setPhotoPreview(null);
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handlePhotoUpload(file);
+  };
 
   const saveProfile = async (e) => {
     e.preventDefault();
@@ -128,14 +177,78 @@ const EditProfile = ({ user }) => {
                     />
                   </div>
 
+                  {/* ── Profile Photo Upload ── */}
                   <div>
-                    <label className="text-xs text-slate-400 font-medium mb-1 block">Photo URL</label>
-                    <input
-                      type="text"
-                      value={photoUrl}
-                      className={inputClass}
-                      onChange={(e) => setPhotoUrl(e.target.value)}
-                    />
+                    <label className="text-xs text-slate-400 font-medium mb-2 block">Profile Photo</label>
+                    <div
+                      className={`relative rounded-2xl border-2 border-dashed transition-all cursor-pointer overflow-hidden ${
+                        dragOver
+                          ? "border-purple-400 bg-purple-500/10"
+                          : "border-white/10 hover:border-white/20 bg-white/[0.02]"
+                      }`}
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                      onDragLeave={() => setDragOver(false)}
+                      onDrop={handleDrop}
+                    >
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        onChange={(e) => handlePhotoUpload(e.target.files[0])}
+                      />
+
+                      <div className="flex items-center gap-4 p-4">
+                        {/* Current photo preview */}
+                        <div className="relative flex-shrink-0">
+                          <img
+                            src={photoPreview || photoUrl}
+                            alt="Profile"
+                            className="w-16 h-16 rounded-xl object-cover ring-2 ring-white/10"
+                            onError={(e) => {
+                              e.target.src = "https://geographyandyou.com/images/user-profile.png";
+                            }}
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                            <Camera className="w-5 h-5 text-white" />
+                          </div>
+                          {photoUploading && (
+                            <div className="absolute inset-0 rounded-xl bg-black/60 flex items-center justify-center">
+                              <div className="w-5 h-5 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-slate-300 font-medium">
+                            {photoUploading ? "Uploading..." : "Click or drag to upload"}
+                          </p>
+                          <p className="text-[10px] text-slate-500 mt-0.5">JPG, PNG, WebP • Max 5MB</p>
+                        </div>
+
+                        <Upload className="w-5 h-5 text-slate-500 flex-shrink-0" />
+                      </div>
+                    </div>
+
+                    {/* Toggle URL input for advanced users */}
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setShowUrlInput(!showUrlInput); }}
+                      className="text-[10px] text-slate-500 hover:text-purple-400 mt-1.5 transition-colors"
+                    >
+                      {showUrlInput ? "Hide URL input" : "Or enter URL manually"}
+                    </button>
+                    {showUrlInput && (
+                      <input
+                        type="text"
+                        value={photoUrl}
+                        className={inputClass + " mt-1.5"}
+                        placeholder="https://example.com/photo.jpg"
+                        onChange={(e) => setPhotoUrl(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    )}
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
