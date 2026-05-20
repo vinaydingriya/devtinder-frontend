@@ -44,22 +44,16 @@ const Login = () => {
 
       if (res.status === 200) {
         setError("");
-        // Auto-login after successful signup
-        try {
-          const loginRes = await api.post("/login", { email, password });
-          if (loginRes.data.token) {
-            localStorage.setItem("token", loginRes.data.token);
-          }
-          dispatch(addUser(loginRes.data.data));
-          navigate("/");
-        } catch (loginErr) {
-          // If auto-login fails, show success and switch to login form
-          setMessage("Account created! Redirecting to login...");
-          setTimeout(() => {
-            setIsLogin(true);
-            setMessage("");
-          }, 1500);
-        }
+        setMessage("🎉 Account created successfully! Please log in.");
+        // Switch to login form after a brief delay
+        setTimeout(() => {
+          setIsLogin(true);
+          setPassword("");
+          setFirstName("");
+          setLastName("");
+          // Keep email so user doesn't have to retype it
+          setMessage("");
+        }, 2000);
       }
     } catch (e) {
       console.log(e);
