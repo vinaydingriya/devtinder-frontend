@@ -13,8 +13,11 @@ import {
   updateRoomLastMessage,
   incrementUnread,
   decrementUnread,
+  deleteMessage,
+  deleteRoom,
 } from "./chatSlice";
 import { addNotification } from "./notificationSlice";
+import { removeConnection } from "./connectionsSlice";
 
 const SocketContext = createContext(null);
 
@@ -168,9 +171,20 @@ export const SocketProvider = ({ children }) => {
       dispatch(markRoomMessagesRead({ chatRoomId, readAt }));
     });
 
+    socket.on("message_deleted", ({ messageId, chatRoomId }) => {
+      dispatch(deleteMessage({ chatRoomId, messageId }));
+    });
+
+    socket.on("chat_deleted", ({ chatRoomId }) => {
+      dispatch(deleteRoom(chatRoomId));
+    });
+
     // Real-time notifications (connection requests, accepts, etc.)
     socket.on("notification", (data) => {
       dispatch(addNotification(data));
+      if (data.type === "connection_removed" && data.fromUser?._id) {
+        dispatch(removeConnection(data.fromUser._id));
+      }
     });
 
     socket.on("error", (error) => {
