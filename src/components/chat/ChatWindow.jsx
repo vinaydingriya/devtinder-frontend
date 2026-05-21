@@ -27,6 +27,7 @@ const ChatWindow = ({ roomId, currentUserId, onBack }) => {
 
   const room = rooms.find((r) => r._id === roomId);
   const partner = room?.participants?.find((p) => p._id !== currentUserId);
+  const isOnline = partner ? onlineUsers.includes(partner._id) : false;
   const handleDeleteMessage = async (messageId) => {
     try {
       const res = await api.delete(`/chat/message/${messageId}`);
