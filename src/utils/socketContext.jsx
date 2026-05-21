@@ -18,6 +18,7 @@ import {
 } from "./chatSlice";
 import { addNotification } from "./notificationSlice";
 import { removeConnection } from "./connectionsSlice";
+import { addSingleRequest } from "./requestsSlice";
 
 const SocketContext = createContext(null);
 
@@ -184,6 +185,22 @@ export const SocketProvider = ({ children }) => {
       dispatch(addNotification(data));
       if (data.type === "connection_removed" && data.fromUser?._id) {
         dispatch(removeConnection(data.fromUser._id));
+      } else if (data.type === "connection_request") {
+        dispatch(
+          addSingleRequest({
+            _id: data.requestId,
+            status: "interested",
+            fromUserId: {
+              _id: data.fromUser._id,
+              firstName: data.fromUser.firstName,
+              lastName: data.fromUser.lastName,
+              photoUrl: data.fromUser.photoUrl,
+              about: data.fromUser.about || "",
+              skills: data.fromUser.skills || [],
+            },
+            createdAt: data.createdAt || new Date(),
+          })
+        );
       }
     });
 

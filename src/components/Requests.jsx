@@ -23,7 +23,6 @@ const Requests = () => {
     const signal = controller.signal;
 
     async function fetchRequests() {
-      if (connectionRequests.length > 0) return;
       try {
         const res = await api.get("/user/requests/received", {
           signal,
@@ -40,7 +39,7 @@ const Requests = () => {
     return () => {
       controller.abort();
     };
-  }, [dispatch, connectionRequests.length]);
+  }, [dispatch]);
 
   if (connectionRequests.length === 0)
     return (
