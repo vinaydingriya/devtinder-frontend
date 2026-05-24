@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import api from "../../utils/api";
 import { setMessages, prependMessages, decrementUnread, deleteMessage, deleteRoom } from "../../utils/chatSlice";
@@ -116,17 +116,15 @@ const ChatWindow = ({ roomId, currentUserId, onBack }) => {
     shouldScrollRef.current = true;
   }, [roomId]);
 
-  // Scroll to bottom after messages finish loading (loadingMessages goes false)
-  useEffect(() => {
+  // Scroll to bottom BEFORE browser paints (useLayoutEffect) — prevents flash of top-scroll
+  useLayoutEffect(() => {
     if (loadingMessages || messages.length === 0) return;
 
     if (shouldScrollRef.current) {
-      // Messages just loaded — use rAF + timeout to wait for DOM paint
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-        }, 0);
-      });
+      const container = messagesContainerRef.current;
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
       shouldScrollRef.current = false;
     }
   }, [loadingMessages, messages]);
@@ -134,7 +132,6 @@ const ChatWindow = ({ roomId, currentUserId, onBack }) => {
   // Auto-scroll for new incoming messages (when already near bottom)
   const prevMessagesLenRef = useRef(messages.length);
   useEffect(() => {
-    // Only run when a new message is added (not on initial load)
     if (messages.length > prevMessagesLenRef.current && !shouldScrollRef.current) {
       const container = messagesContainerRef.current;
       if (container) {
