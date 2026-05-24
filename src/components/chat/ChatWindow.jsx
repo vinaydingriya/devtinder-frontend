@@ -108,15 +108,32 @@ const ChatWindow = ({ roomId, currentUserId, onBack }) => {
     }
   }, [roomId, messages.length]);
 
+  // Track initial load to force scroll-to-bottom when opening a chat
+  const isInitialLoadRef = useRef(true);
+
+  // Reset initial load flag when room changes
+  useEffect(() => {
+    isInitialLoadRef.current = true;
+  }, [roomId]);
+
   // Auto-scroll to bottom for new messages
   useEffect(() => {
     const container = messagesContainerRef.current;
-    if (!container) return;
+    if (!container || messages.length === 0) return;
+
+    if (isInitialLoadRef.current) {
+      // First load — instant scroll to bottom (no animation delay)
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+      }, 50);
+      isInitialLoadRef.current = false;
+      return;
+    }
 
     const isNearBottom =
       container.scrollHeight - container.scrollTop - container.clientHeight < 150;
 
-    if (isNearBottom || page === 1) {
+    if (isNearBottom) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);

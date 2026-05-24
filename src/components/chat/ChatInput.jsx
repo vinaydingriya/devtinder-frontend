@@ -122,11 +122,40 @@ const ChatInput = ({ roomId, currentUserGithub, partnerGithub }) => {
     if (!username) return;
     setLoadingRepos(true);
     try {
-      const res = await api.get(`/chat/github/repos/${encodeURIComponent(username)}`);
-      setRepos(res.data.data || []);
+      // Call GitHub API directly from the browser (avoids server IP rate-limiting)
+      const response = await fetch(
+        `https://api.github.com/users/${encodeURIComponent(username)}/repos?sort=updated&direction=desc&per_page=30`,
+        {
+          headers: {
+            Accept: "application/vnd.github.v3+json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`GitHub API: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const simplified = data.map((repo) => ({
+        name: repo.name,
+        full_name: repo.full_name,
+        description: repo.description,
+        html_url: repo.html_url,
+        language: repo.language,
+        stargazers_count: repo.stargazers_count,
+        forks_count: repo.forks_count,
+      }));
+      setRepos(simplified);
     } catch (err) {
       console.error("Failed to fetch repos:", err);
-      setRepos([]);
+      // Fallback: try via backend proxy
+      try {
+        const res = await api.get(`/chat/github/repos/${encodeURIComponent(username)}`);
+        setRepos(res.data.data || []);
+      } catch {
+        setRepos([]);
+      }
     } finally {
       setLoadingRepos(false);
     }
