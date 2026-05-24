@@ -15,6 +15,8 @@ const ChatWindow = ({ roomId, currentUserId, onBack }) => {
   const rooms = useSelector((store) => store.chat.rooms);
   const typingUser = useSelector((store) => store.chat.typingUsers[roomId]);
   const onlineUsers = useSelector((store) => store.chat.onlineUsers);
+  const currentUser = useSelector((store) => store.user);
+  const currentUserGithub = currentUser?.data?.githubUsername;
 
   const { joinRoom, leaveRoom, markAsRead } = useSocket();
   const messagesEndRef = useRef(null);
@@ -273,7 +275,11 @@ const ChatWindow = ({ roomId, currentUserId, onBack }) => {
           </div>
 
           {/* Chat Input */}
-          <ChatInput roomId={roomId} />
+          <ChatInput
+            roomId={roomId}
+            currentUserGithub={currentUserGithub}
+            partnerGithub={partner?.githubUsername}
+          />
         </div>
 
         {/* Shared Resources Panel */}

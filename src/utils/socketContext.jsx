@@ -134,6 +134,23 @@ export const SocketProvider = ({ children }) => {
       // If we're NOT currently viewing this room, increment unread
       if (activeRoomIdRef.current !== message.chatRoomId) {
         dispatch(incrementUnread({ roomId: message.chatRoomId }));
+        // Show toast notification for new chat message
+        const senderName = message.senderId?.firstName
+          ? `${message.senderId.firstName} ${message.senderId.lastName || ""}`.trim()
+          : "Someone";
+        dispatch(
+          addNotification({
+            type: "new_message",
+            message: `${senderName}: ${message.text?.substring(0, 80) || "sent a message"}`,
+            fromUser: {
+              _id: msgSenderId,
+              firstName: message.senderId?.firstName,
+              lastName: message.senderId?.lastName,
+              photoUrl: message.senderId?.photoUrl,
+            },
+            chatRoomId: message.chatRoomId,
+          })
+        );
       } else {
         // We're viewing this room — mark as read immediately
         socket.emit("message_read", { chatRoomId: message.chatRoomId });

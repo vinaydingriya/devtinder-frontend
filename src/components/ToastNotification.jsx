@@ -8,6 +8,7 @@ const ICONS = {
   request_accepted: UserCheck,
   request_rejected: UserX,
   new_message: MessageCircle,
+  connection_removed: UserX,
 };
 
 const COLORS = {
@@ -15,6 +16,7 @@ const COLORS = {
   request_accepted: "from-emerald-500/20 to-teal-500/20 border-emerald-500/30",
   request_rejected: "from-red-500/20 to-orange-500/20 border-red-500/30",
   new_message: "from-blue-500/20 to-cyan-500/20 border-blue-500/30",
+  connection_removed: "from-red-500/20 to-orange-500/20 border-red-500/30",
 };
 
 const ICON_COLORS = {
@@ -22,6 +24,7 @@ const ICON_COLORS = {
   request_accepted: "text-emerald-400",
   request_rejected: "text-red-400",
   new_message: "text-blue-400",
+  connection_removed: "text-red-400",
 };
 
 const ToastNotification = () => {
