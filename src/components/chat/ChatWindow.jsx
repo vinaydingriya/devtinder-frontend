@@ -108,35 +108,45 @@ const ChatWindow = ({ roomId, currentUserId, onBack }) => {
     }
   }, [roomId, messages.length]);
 
-  // Track initial load to force scroll-to-bottom when opening a chat
-  const isInitialLoadRef = useRef(true);
+  // Track whether we need to scroll to bottom on next render
+  const shouldScrollRef = useRef(true);
 
-  // Reset initial load flag when room changes
+  // When room changes, flag that we need to scroll to bottom
   useEffect(() => {
-    isInitialLoadRef.current = true;
+    shouldScrollRef.current = true;
   }, [roomId]);
 
-  // Auto-scroll to bottom for new messages
+  // Scroll to bottom after messages finish loading (loadingMessages goes false)
   useEffect(() => {
-    const container = messagesContainerRef.current;
-    if (!container || messages.length === 0) return;
+    if (loadingMessages || messages.length === 0) return;
 
-    if (isInitialLoadRef.current) {
-      // First load — instant scroll to bottom (no animation delay)
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-      }, 50);
-      isInitialLoadRef.current = false;
-      return;
+    if (shouldScrollRef.current) {
+      // Messages just loaded — use rAF + timeout to wait for DOM paint
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+        }, 0);
+      });
+      shouldScrollRef.current = false;
     }
+  }, [loadingMessages, messages]);
 
-    const isNearBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight < 150;
-
-    if (isNearBottom) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // Auto-scroll for new incoming messages (when already near bottom)
+  const prevMessagesLenRef = useRef(messages.length);
+  useEffect(() => {
+    // Only run when a new message is added (not on initial load)
+    if (messages.length > prevMessagesLenRef.current && !shouldScrollRef.current) {
+      const container = messagesContainerRef.current;
+      if (container) {
+        const isNearBottom =
+          container.scrollHeight - container.scrollTop - container.clientHeight < 150;
+        if (isNearBottom) {
+          messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+      }
     }
-  }, [messages]);
+    prevMessagesLenRef.current = messages.length;
+  }, [messages.length]);
 
   // Infinite scroll up for older messages
   const handleScroll = () => {
